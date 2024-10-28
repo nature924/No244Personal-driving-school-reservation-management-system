@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.JiaolianDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.username as username
+        ,a.password as password
+        ,a.jiaolian_uuid_number as jiaolianUuidNumber
+        ,a.jiaolian_name as jiaolianName
+        ,a.jiaolian_photo as jiaolianPhoto
+        ,a.sex_types as sexTypes
+        ,a.jiaolian_phone as jiaolianPhone
+        ,a.zan_number as zanNumber
+        ,a.cai_number as caiNumber
+        ,a.jiaolian_types as jiaolianTypes
+        ,a.jiaolian_clicknum as jiaolianClicknum
+        ,a.jiaolian_content as jiaolianContent
+        ,a.jiaolian_delete as jiaolianDelete
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.JiaolianView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+
+        FROM jiaolian  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.username != '' and params.username != null and params.username != 'null' ">
+                and a.username like CONCAT('%',#{params.username},'%')
+            </if>
+            <if test=" params.password != '' and params.password != null and params.password != 'null' ">
+                and a.password like CONCAT('%',#{params.password},'%')
+            </if>
+            <if test=" params.jiaolianUuidNumber != '' and params.jiaolianUuidNumber != null and params.jiaolianUuidNumber != 'null' ">
+                and a.jiaolian_uuid_number like CONCAT('%',#{params.jiaolianUuidNumber},'%')
+            </if>
+            <if test=" params.jiaolianName != '' and params.jiaolianName != null and params.jiaolianName != 'null' ">
+                and a.jiaolian_name like CONCAT('%',#{params.jiaolianName},'%')
+            </if>
+            <if test="params.sexTypes != null and params.sexTypes != ''">
+                and a.sex_types = #{params.sexTypes}
+            </if>
+            <if test=" params.jiaolianPhone != '' and params.jiaolianPhone != null and params.jiaolianPhone != 'null' ">
+                and a.jiaolian_phone like CONCAT('%',#{params.jiaolianPhone},'%')
+            </if>
+            <if test="params.zanNumberStart != null and params.zanNumberStart != ''">
+                <![CDATA[  and a.zan_number >= #{params.zanNumberStart}   ]]>
+            </if>
+            <if test="params.zanNumberEnd != null and params.zanNumberEnd != ''">
+                <![CDATA[  and a.zan_number <= #{params.zanNumberEnd}   ]]>
+            </if>
+             <if test="params.zanNumber != null and params.zanNumber != ''">
+                and a.zan_number = #{params.zanNumber}
+             </if>
+            <if test="params.caiNumberStart != null and params.caiNumberStart != ''">
+                <![CDATA[  and a.cai_number >= #{params.caiNumberStart}   ]]>
+            </if>
+            <if test="params.caiNumberEnd != null and params.caiNumberEnd != ''">
+                <![CDATA[  and a.cai_number <= #{params.caiNumberEnd}   ]]>
+            </if>
+             <if test="params.caiNumber != null and params.caiNumber != ''">
+                and a.cai_number = #{params.caiNumber}
+             </if>
+            <if test="params.jiaolianTypes != null and params.jiaolianTypes != ''">
+                and a.jiaolian_types = #{params.jiaolianTypes}
+            </if>
+            <if test="params.jiaolianClicknumStart != null and params.jiaolianClicknumStart != ''">
+                <![CDATA[  and a.jiaolian_clicknum >= #{params.jiaolianClicknumStart}   ]]>
+            </if>
+            <if test="params.jiaolianClicknumEnd != null and params.jiaolianClicknumEnd != ''">
+                <![CDATA[  and a.jiaolian_clicknum <= #{params.jiaolianClicknumEnd}   ]]>
+            </if>
+             <if test="params.jiaolianClicknum != null and params.jiaolianClicknum != ''">
+                and a.jiaolian_clicknum = #{params.jiaolianClicknum}
+             </if>
+            <if test=" params.jiaolianContent != '' and params.jiaolianContent != null and params.jiaolianContent != 'null' ">
+                and a.jiaolian_content like CONCAT('%',#{params.jiaolianContent},'%')
+            </if>
+            <if test="params.jiaolianDeleteStart != null and params.jiaolianDeleteStart != ''">
+                <![CDATA[  and a.jiaolian_delete >= #{params.jiaolianDeleteStart}   ]]>
+            </if>
+            <if test="params.jiaolianDeleteEnd != null and params.jiaolianDeleteEnd != ''">
+                <![CDATA[  and a.jiaolian_delete <= #{params.jiaolianDeleteEnd}   ]]>
+            </if>
+             <if test="params.jiaolianDelete != null and params.jiaolianDelete != ''">
+                and a.jiaolian_delete = #{params.jiaolianDelete}
+             </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.CheliangYuyueDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.cheliang_yuyue_uuid_number as cheliangYuyueUuidNumber
+        ,a.cheliang_id as cheliangId
+        ,a.yonghu_id as yonghuId
+        ,a.cheliang_yuyue_text as cheliangYuyueText
+        ,a.cheliang_yuyue_time as cheliangYuyueTime
+        ,a.cheliang_yuyue_yesno_types as cheliangYuyueYesnoTypes
+        ,a.cheliang_yuyue_yesno_text as cheliangYuyueYesnoText
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.CheliangYuyueView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,cheliang.cheliang_uuid_number as cheliangUuidNumber
+        ,cheliang.cheliang_name as cheliangName
+        ,cheliang.cheliang_photo as cheliangPhoto
+        ,cheliang.cheliang_types as cheliangTypes
+        ,cheliang.cheliang_clicknum as cheliangClicknum
+        ,cheliang.cheliang_content as cheliangContent
+        ,cheliang.cheliang_delete as cheliangDelete
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_photo as yonghuPhoto
+        ,yonghu.yonghu_email as yonghuEmail
+        ,yonghu.yonghu_delete as yonghuDelete
+
+        FROM cheliang_yuyue  a
+        left JOIN cheliang cheliang ON a.cheliang_id = cheliang.id
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.cheliangYuyueUuidNumber != '' and params.cheliangYuyueUuidNumber != null and params.cheliangYuyueUuidNumber != 'null' ">
+                and a.cheliang_yuyue_uuid_number like CONCAT('%',#{params.cheliangYuyueUuidNumber},'%')
+            </if>
+            <if test="params.cheliangId != null and params.cheliangId != ''">
+                and (
+                    a.cheliang_id = #{params.cheliangId}
+                )
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+                and (
+                    a.yonghu_id = #{params.yonghuId}
+                )
+            </if>
+            <if test=" params.cheliangYuyueText != '' and params.cheliangYuyueText != null and params.cheliangYuyueText != 'null' ">
+                and a.cheliang_yuyue_text like CONCAT('%',#{params.cheliangYuyueText},'%')
+            </if>
+            <if test=" params.cheliangYuyueTimeStart != '' and params.cheliangYuyueTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.cheliang_yuyue_time) >= UNIX_TIMESTAMP(#{params.cheliangYuyueTimeStart}) ]]>
+            </if>
+            <if test=" params.cheliangYuyueTimeEnd != '' and params.cheliangYuyueTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.cheliang_yuyue_time) <= UNIX_TIMESTAMP(#{params.cheliangYuyueTimeEnd}) ]]>
+            </if>
+            <if test="params.cheliangYuyueYesnoTypes != null and params.cheliangYuyueYesnoTypes != ''">
+                and a.cheliang_yuyue_yesno_types = #{params.cheliangYuyueYesnoTypes}
+            </if>
+            <if test=" params.cheliangYuyueYesnoText != '' and params.cheliangYuyueYesnoText != null and params.cheliangYuyueYesnoText != 'null' ">
+                and a.cheliang_yuyue_yesno_text like CONCAT('%',#{params.cheliangYuyueYesnoText},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+                <!-- 判断车辆的id不为空 -->
+            <if test=" params.cheliangIdNotNull != '' and params.cheliangIdNotNull != null and params.cheliangIdNotNull != 'null' ">
+                and a.cheliang_id IS NOT NULL
+            </if>
+            <if test=" params.cheliangUuidNumber != '' and params.cheliangUuidNumber != null and params.cheliangUuidNumber != 'null' ">
+                and cheliang.cheliang_uuid_number like CONCAT('%',#{params.cheliangUuidNumber},'%')
+            </if>
+            <if test=" params.cheliangName != '' and params.cheliangName != null and params.cheliangName != 'null' ">
+                and cheliang.cheliang_name like CONCAT('%',#{params.cheliangName},'%')
+            </if>
+            <if test="params.cheliangTypes != null  and params.cheliangTypes != ''">
+                and cheliang.cheliang_types = #{params.cheliangTypes}
+            </if>
+
+            <if test="params.cheliangClicknumStart != null  and params.cheliangClicknumStart != '' ">
+                <![CDATA[  and cheliang.cheliang_clicknum >= #{params.cheliangClicknumStart}   ]]>
+            </if>
+            <if test="params.cheliangClicknumEnd != null  and params.cheliangClicknumEnd != '' ">
+                <![CDATA[  and cheliang.cheliang_clicknum <= #{params.cheliangClicknumEnd}   ]]>
+            </if>
+            <if test="params.cheliangClicknum != null  and params.cheliangClicknum != '' ">
+                and cheliang.cheliang_clicknum = #{params.cheliangClicknum}
+            </if>
+            <if test=" params.cheliangContent != '' and params.cheliangContent != null and params.cheliangContent != 'null' ">
+                and cheliang.cheliang_content like CONCAT('%',#{params.cheliangContent},'%')
+            </if>
+            <if test="params.cheliangDeleteStart != null  and params.cheliangDeleteStart != '' ">
+                <![CDATA[  and cheliang.cheliang_delete >= #{params.cheliangDeleteStart}   ]]>
+            </if>
+            <if test="params.cheliangDeleteEnd != null  and params.cheliangDeleteEnd != '' ">
+                <![CDATA[  and cheliang.cheliang_delete <= #{params.cheliangDeleteEnd}   ]]>
+            </if>
+            <if test="params.cheliangDelete != null  and params.cheliangDelete != '' ">
+                and cheliang.cheliang_delete = #{params.cheliangDelete}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(cheliang.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(cheliang.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+                <!-- 判断用户的id不为空 -->
+            <if test=" params.yonghuIdNotNull != '' and params.yonghuIdNotNull != null and params.yonghuIdNotNull != 'null' ">
+                and a.yonghu_id IS NOT NULL
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuEmail != '' and params.yonghuEmail != null and params.yonghuEmail != 'null' ">
+                and yonghu.yonghu_email like CONCAT('%',#{params.yonghuEmail},'%')
+            </if>
+            <if test="params.yonghuDeleteStart != null  and params.yonghuDeleteStart != '' ">
+                <![CDATA[  and yonghu.yonghu_delete >= #{params.yonghuDeleteStart}   ]]>
+            </if>
+            <if test="params.yonghuDeleteEnd != null  and params.yonghuDeleteEnd != '' ">
+                <![CDATA[  and yonghu.yonghu_delete <= #{params.yonghuDeleteEnd}   ]]>
+            </if>
+            <if test="params.yonghuDelete != null  and params.yonghuDelete != '' ">
+                and yonghu.yonghu_delete = #{params.yonghuDelete}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(yonghu.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(yonghu.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>
